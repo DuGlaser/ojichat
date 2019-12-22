@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/docopt/docopt-go"
 	"github.com/greymd/ojichat/generator"
+	"github.com/labstack/echo"
 )
 
 var appVersion = `Ojisan Nanchatte (ojichat) command version 0.2.0
@@ -25,7 +26,7 @@ Options:
 
 // TODO: --type おじさんタイプ (絵文字乱用, 顔文字乱用, 句読点, 若作り)
 
-func main() {
+func ojichat(c echo.Context) error {
 	parser := &docopt.Parser{
 		OptionsFirst: true,
 	}
@@ -42,5 +43,12 @@ func main() {
 		log.Fatal(err)
 		os.Exit(1)
 	}
-	fmt.Printf("%s\n", result)
+
+	return c.String(http.StatusOK, result)
+}
+
+func main() {
+	e := echo.New()
+	e.GET("/", ojichat)
+	e.Logger.Fatal(e.Start(":1323"))
 }
